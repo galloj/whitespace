@@ -5,10 +5,10 @@ import kotlin.math.absoluteValue
 class Instruction private constructor(val op: Operation, val param: Int = 0) {
 	fun getCode(): String {
 		return when(op) {
-			Operation.READCH -> "\t \t "
-			Operation.READI -> "\t \t\t"
-			Operation.WRITECH -> "\t   "
-			Operation.WRITEI -> "\t  \t"
+			Operation.READCH -> "\t\n\t "
+			Operation.READI -> "\t\n\t\t"
+			Operation.WRITECH -> "\t\n  "
+			Operation.WRITEI -> "\t\n \t"
 			
 			Operation.PUSH -> "  ${codeFromInteger(param)}"
 			Operation.DUP -> " \n "
@@ -67,6 +67,32 @@ class Instruction private constructor(val op: Operation, val param: Int = 0) {
 			Operation.STORE -> "store"
 			Operation.LOAD -> "load"
 		}
+	}
+	
+	override fun equals(other: Any?): Boolean {
+		if(other == null) {
+			return false
+		}
+		if(other !is Instruction) {
+			return false
+		}
+		if(this.op != other.op) {
+			return false
+		}
+		if(this.param != other.param) {
+			return false
+		}
+		return true
+	}
+	
+	override fun hashCode(): Int {
+		var hash = op.hashCode()
+		hash = hash * 31 + param.hashCode()
+		return hash
+	}
+	
+	override fun toString(): String {
+		return "Instruction($op, $param)"
 	}
 	
 	companion object {
@@ -170,77 +196,77 @@ class Instruction private constructor(val op: Operation, val param: Int = 0) {
 				throw IllegalArgumentException("Not enough data to parse instruction type")
 			}
 			return if(code.startsWith("\t\n\t ")) {
-				Pair(4, Instruction(Operation.READCH))
+				Pair(4, readch())
 			} else if(code.startsWith("\t\n\t\t")) {
-				Pair(4, Instruction(Operation.READI))
+				Pair(4, readi())
 			} else if(code.startsWith("\t\n  ")) {
-				Pair(4, Instruction(Operation.WRITECH))
+				Pair(4, writech())
 			} else if(code.startsWith("\t\n \t")) {
-				Pair(4, Instruction(Operation.WRITEI))
+				Pair(4, writei())
 			} else if(code.startsWith("  ")) {
 				var length = 2
 				val param = code.substring(length)
 				length += getIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.PUSH, integerFromCode(param)))
+				Pair(length, push(integerFromCode(param)))
 			} else if(code.startsWith(" \n ")) {
-				Pair(3, Instruction(Operation.DUP))
+				Pair(3, dup())
 			} else if(code.startsWith(" \n\t")) {
-				Pair(3, Instruction(Operation.SWAP))
+				Pair(3, swap())
 			} else if(code.startsWith(" \n\n")) {
-				Pair(3, Instruction(Operation.POP))
+				Pair(3, pop())
 			} else if(code.startsWith(" \t ")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.COPY, integerFromCode(param)))
+				Pair(length, copy(integerFromCode(param)))
 			} else if(code.startsWith(" \t\n")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.DROP, integerFromCode(param)))
+				Pair(length, drop(integerFromCode(param)))
 			} else if(code.startsWith("\t   ")) {
-				Pair(4, Instruction(Operation.ADD))
+				Pair(4, add())
 			} else if(code.startsWith("\t  \t")) {
-				Pair(4, Instruction(Operation.SUB))
+				Pair(4, sub())
 			} else if(code.startsWith("\t  \n")) {
-				Pair(4, Instruction(Operation.MUL))
+				Pair(4, mul())
 			} else if(code.startsWith("\t \t ")) {
-				Pair(4, Instruction(Operation.DIV))
+				Pair(4, div())
 			} else if(code.startsWith("\t \t\t")) {
-				Pair(4, Instruction(Operation.MOD))
+				Pair(4, mod())
 			} else if(code.startsWith("\n  ")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getUnsignedIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.LABEL, unsignedIntegerFromCode(param)))
+				Pair(length, label(unsignedIntegerFromCode(param)))
 			} else if(code.startsWith("\n \t")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getUnsignedIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.CALL, unsignedIntegerFromCode(param)))
+				Pair(length, call(unsignedIntegerFromCode(param)))
 			} else if(code.startsWith("\n \n")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getUnsignedIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.JMP, unsignedIntegerFromCode(param)))
+				Pair(length, jmp(unsignedIntegerFromCode(param)))
 			} else if(code.startsWith("\n\t ")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getUnsignedIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.JMPZERO, unsignedIntegerFromCode(param)))
+				Pair(length, jmpZero(unsignedIntegerFromCode(param)))
 			} else if(code.startsWith("\n\t\t")) {
 				var length = 3
 				val param = code.substring(length)
 				length += getUnsignedIntegerCodeLength(param)
-				Pair(length, Instruction(Operation.JMPNEG, unsignedIntegerFromCode(param)))
+				Pair(length, jmpNeg(unsignedIntegerFromCode(param)))
 			} else if(code.startsWith("\n\t\n")) {
-				Pair(3, Instruction(Operation.RET))
+				Pair(3, ret())
 			} else if(code.startsWith("\n\n\n")) {
-				Pair(3, Instruction(Operation.EXIT))
+				Pair(3, exit())
 			} else if(code.startsWith("\t\t ")) {
-				Pair(3, Instruction(Operation.STORE))
+				Pair(3, store())
 			} else if(code.startsWith("\t\t\t")) {
-				Pair(3, Instruction(Operation.LOAD))
+				Pair(3, load())
 			} else {
 				throw IllegalArgumentException("Unknown instruction code")
 			}
@@ -254,38 +280,67 @@ class Instruction private constructor(val op: Operation, val param: Int = 0) {
 			val opcode = parts[0].lowercase()
 			val argument = parts.getOrNull(1)
 			return when(opcode) {
-				"readch" -> Instruction(Operation.READCH)
-				"readi" -> Instruction(Operation.READI)
-				"writech" -> Instruction(Operation.WRITECH)
-				"writei" -> Instruction(Operation.WRITEI)
+				"readch" -> readch()
+				"readi" -> readi()
+				"writech" -> writech()
+				"writei" -> writei()
 				
-				"push" -> Instruction(Operation.PUSH, requireNumberArgument(argument))
-				"dup" -> Instruction(Operation.DUP)
-				"swap" -> Instruction(Operation.SWAP)
-				"pop" -> Instruction(Operation.POP)
-				"copy" -> Instruction(Operation.COPY, requireNumberArgument(argument))
-				"drop" -> Instruction(Operation.DROP, requireNumberArgument(argument))
+				"push" -> push(requireNumberArgument(argument))
+				"dup" -> dup()
+				"swap" -> swap()
+				"pop" -> pop()
+				"copy" -> copy(requireNumberArgument(argument))
+				"drop" -> drop(requireNumberArgument(argument))
 				
-				"add" -> Instruction(Operation.ADD)
-				"sub" -> Instruction(Operation.SUB)
-				"mul" -> Instruction(Operation.MUL)
-				"div" -> Instruction(Operation.DIV)
-				"mod" -> Instruction(Operation.MOD)
+				"add" -> add()
+				"sub" -> sub()
+				"mul" -> mul()
+				"div" -> div()
+				"mod" -> mod()
 				
-				"label" -> Instruction(Operation.LABEL, requireLabelArgument(argument))
-				"call" -> Instruction(Operation.CALL, requireLabelArgument(argument))
-				"jmp" -> Instruction(Operation.JMP, requireLabelArgument(argument))
-				"jmpzero" -> Instruction(Operation.JMPZERO, requireLabelArgument(argument))
-				"jmpneg" -> Instruction(Operation.JMPNEG, requireLabelArgument(argument))
-				"ret" -> Instruction(Operation.RET)
-				"exit" -> Instruction(Operation.EXIT)
+				"label" -> label(requireLabelArgument(argument))
+				"call" -> call(requireLabelArgument(argument))
+				"jmp" -> jmp(requireLabelArgument(argument))
+				"jmpzero" -> jmpZero(requireLabelArgument(argument))
+				"jmpneg" -> jmpNeg(requireLabelArgument(argument))
+				"ret" -> ret()
+				"exit" -> exit()
 				
-				"store" -> Instruction(Operation.STORE)
-				"load" -> Instruction(Operation.LOAD)
+				"store" -> store()
+				"load" -> load()
 				
 				else -> throw IllegalArgumentException("Unknown OP code \"${opcode}\"")
 			}
 		}
+		
+		fun readch(): Instruction = Instruction(Operation.READCH)
+		fun readi(): Instruction = Instruction(Operation.READI)
+		fun writech(): Instruction = Instruction(Operation.WRITECH)
+		fun writei(): Instruction = Instruction(Operation.WRITEI)
+		
+		fun push(value: Int): Instruction = Instruction(Operation.PUSH, value)
+		fun dup(): Instruction = Instruction(Operation.DUP)
+		fun swap(): Instruction = Instruction(Operation.SWAP)
+		fun pop(): Instruction = Instruction(Operation.POP)
+		fun copy(stackPosition: Int): Instruction = Instruction(Operation.COPY, stackPosition)
+		fun drop(count: Int): Instruction = Instruction(Operation.DROP, count)
+		
+		fun add(): Instruction = Instruction(Operation.ADD)
+		fun sub(): Instruction = Instruction(Operation.SUB)
+		fun mul(): Instruction = Instruction(Operation.MUL)
+		fun div(): Instruction = Instruction(Operation.DIV)
+		fun mod(): Instruction = Instruction(Operation.MOD)
+		
+		fun label(label: Int): Instruction = Instruction(Operation.LABEL, label)
+		fun call(label: Int): Instruction = Instruction(Operation.CALL, label)
+		fun jmp(label: Int): Instruction = Instruction(Operation.JMP, label)
+		fun jmpZero(label: Int): Instruction = Instruction(Operation.JMPZERO, label)
+		fun jmpNeg(label: Int): Instruction = Instruction(Operation.JMPNEG, label)
+		fun ret(): Instruction = Instruction(Operation.RET)
+		fun exit(): Instruction = Instruction(Operation.EXIT)
+		
+		fun store(): Instruction = Instruction(Operation.STORE)
+		fun load(): Instruction = Instruction(Operation.LOAD)
 	}
 	
 	enum class Operation {
