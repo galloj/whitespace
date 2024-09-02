@@ -8,6 +8,32 @@
     <artifactId>whitespace</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <name>Whitespace language library</name>
+    <description>Library for parsing, serializing, and executing Whitespace code</description>
+    <url>https://github.com/galloj/whitespace</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>galloj</id>
+            <name>Jiří Gallo</name>
+            <email>jiri.gallo@centrum.cz</email>
+            <url>https://galloj.cz/</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/galloj/whitespace.git</connection>
+        <developerConnection>scm:git:ssh://github.com:galloj/whitespace.git</developerConnection>
+        <url>http://github.com/galloj/whitespace/tree/master</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.code.style>official</kotlin.code.style>
