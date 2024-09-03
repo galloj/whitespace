@@ -18,6 +18,21 @@ class Program(val instructions: List<Instruction>) {
 		return sb.toString()
 	}
 	
+	override fun equals(other: Any?): Boolean {
+		if(other !is Program) {
+			return false
+		}
+		return instructions.equals(other.instructions)
+	}
+	
+	override fun hashCode(): Int {
+		return instructions.hashCode()
+	}
+	
+	override fun toString(): String {
+		return "Program(${instructions.toString()})"
+	}
+	
 	companion object {
 		fun fromCode(code: String): Program {
 			val codeWithoutComments = code.replace(Regex("[^ \t\n]"), "")
