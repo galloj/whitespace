@@ -10,6 +10,9 @@ class MachineState {
 	var terminated: Boolean = false
 }
 
+/**
+ * Interface that provides input and output methods for the [Machine] class
+ */
 interface IOInterface {
 	fun getInt(): Int
 	fun getChar(): Char
@@ -46,6 +49,9 @@ class Machine(var program: Program, var ioInterface: IOInterface) {
 		throw IllegalStateException("The label $label was not found")
 	}
 	
+	/**
+	 * Executes single instruction
+	 */
 	fun step() {
 		var branchTaken = false
 		if(machineState.pc >= program.instructions.size) {
@@ -161,6 +167,10 @@ class Machine(var program: Program, var ioInterface: IOInterface) {
 		}
 	}
 	
+	/**
+	 * Executes the program till it finishes either by executing [Operation.EXIT] instruction
+	 * or by throwing exception
+	 */
 	fun run() {
 		while(!isFinished()) {
 			step()
